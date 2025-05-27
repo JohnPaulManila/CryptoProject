@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CryptoProject API Documentation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 2rem auto;
+      line-height: 1.6;
+      color: #2c3e50;
+      padding: 0 1rem;
+    }
+    h1, h2, h3 {
+      color: #34495e;
+      margin-bottom: 0.5rem;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 14px;
+      margin-bottom: 1rem;
+    }
+    code {
+      color: #c0392b;
+      font-family: monospace;
+    }
+    table {
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #ecf0f1;
+    }
+    section {
+      margin-bottom: 3rem;
+    }
+    a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>CryptoProject API Documentation</h1>
+
+  <p>This API provides cryptocurrency data, price alerts, conversions, historical data, and market insights by fetching live data from CoinGecko.</p>
+
+  <section>
+    <h2>Base URL</h2>
+    <p><code>https://cryptoproject-bvhy.onrender.com</code></p>
+  </section>
+
+  <section>
+    <h2>Endpoints</h2>
+
+    <h3>GET /coins/list</h3>
+    <p>Returns a list of all supported coins with their IDs, symbols, and names.</p>
+    <pre><code>GET /coins/list</code></pre>
+    <p><strong>Response:</strong> Array of coins:</p>
+    <pre><code>[
+  {
+    "id": "bitcoin",
+    "symbol": "btc",
+    "name": "Bitcoin"
+  },
+  {
+    "id": "ethereum",
+    "symbol": "eth",
+    "name": "Ethereum"
+  },
+  ...
+]</code></pre>
+
+    <h3>GET /price/:symbol</h3>
+    <p>Gets the current USD price for a cryptocurrency specified by its symbol.</p>
+    <pre><code>GET /price/btc</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "symbol": "BTC",
+  "price": 27950.32
+}</code></pre>
+    <p><em>Returns 404 if the symbol is not found.</em></p>
+
+    <h3>POST /webhook/price-alert</h3>
+    <p>Check if the price of a coin has changed beyond a threshold since the last check and trigger an alert.</p>
+    <pre><code>POST /webhook/price-alert
+Content-Type: application/json
+
+{
+  "symbol": "btc",
+  "threshold": 500
+}</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "symbol": "btc",
+  "currentPrice": 27950.32,
+  "alert": true  // true if price changed by threshold or more, else false
+}</code></pre>
+    <p><em>Returns 404 if the symbol is invalid.</em></p>
+
+    <h3>GET /convert</h3>
+    <p>Convert an amount between two cryptocurrencies by symbol using their USD prices.</p>
+    <pre><code>GET /convert?from=btc&to=eth&amount=2</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "from": "BTC",
+  "to": "ETH",
+  "rate": 14.5  // 1 BTC equals 14.5 ETH approximately
+}</code></pre>
+    <p><em>Returns 404 if any symbol is invalid.</em></p>
+
+    <h3>GET /history/:symbol</h3>
+    <p>Retrieve 7-day historical market data for a coin, including prices, market caps, and volumes.</p>
+    <pre><code>GET /history/eth</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "prices": [[timestamp, price], ...],
+  "market_caps": [[timestamp, marketCap], ...],
+  "total_volumes": [[timestamp, volume], ...]
+}</code></pre>
+    <p><em>Returns 404 if the symbol is not found.</em></p>
+
+    <h3>GET /top/movers</h3>
+    <p>Get the top 5 gainers and top 5 losers based on 24-hour price changes.</p>
+    <pre><code>GET /top/movers</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "top_gainers": [ /* Array of 5 coins with highest 24h % gain */ ],
+  "top_losers": [ /* Array of 5 coins with highest 24h % loss */ ]
+}</code></pre>
+
+    <h3>GET /new/listings</h3>
+    <p>Get the 10 newest cryptocurrency listings by market cap ascending.</p>
+    <pre><code>GET /new/listings</code></pre>
+    <p><strong>Response:</strong> Array of coin objects.</p>
+
+    <h3>GET /trending</h3>
+    <p>Get a list of currently trending coins.</p>
+    <pre><code>GET /trending</code></pre>
+    <p><strong>Response:</strong> Array of trending coin objects.</p>
+  </section>
+
+  <section>
+    <h2>Usage Example</h2>
+    <p>Fetch the current price of Bitcoin using JavaScript:</p>
+    <pre><code>fetch('https://cryptoproject-bvhy.onrender.com/price/btc')
+  .then(res => res.json())
+  .then(data => console.log(`BTC price: $${data.price}`))
+  .catch(err => console.error(err));</code></pre>
+  </section>
+
+  <section>
+    <h2>Notes</h2>
+    <ul>
+      <li>All prices are in USD.</li>
+      <li>Symbol matching is case-insensitive.</li>
+      <li>Price alerts are based on absolute price difference since last check.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <p>For support or questions, contact: <a href="https://t.me/qwertykwads" target="_blank" rel="noopener noreferrer">@qwertykwads</a></p>
+  </section>
+</body>
+</html>
